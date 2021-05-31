@@ -9,8 +9,11 @@ import net.dv8tion.jda.api.entities.Emoji;
 import javax.annotation.Nonnull;
 
 public class StandardPaginatorBuilder extends PaginatorBuilder {
-    private Emoji[] emojis = new Emoji[]{
-            Constants.ARROW_LEFT_EMOJI, Constants.ARROW_RIGHT_EMOJI, Constants.WASTEBASKET_EMOJI};
+    private Emoji[] emojis = {
+            Constants.ARROW_LEFT_EMOJI,
+            Constants.ARROW_RIGHT_EMOJI,
+            Constants.WASTEBASKET_EMOJI
+    };
 
     @Nonnull
     @Override

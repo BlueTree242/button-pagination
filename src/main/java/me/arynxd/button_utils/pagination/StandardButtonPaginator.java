@@ -81,11 +81,7 @@ public class StandardButtonPaginator implements Paginator {
             backward.asDisabled();
         }
         return ActionRow.of(
-                //Forward
-                forward,
-                //Backward
-                backward,
-                Button.danger(jwtTokens.get(2), emojis[2])
+                backward, forward, Button.danger(jwtTokens.get(2), emojis[2])
         );
     }
 
