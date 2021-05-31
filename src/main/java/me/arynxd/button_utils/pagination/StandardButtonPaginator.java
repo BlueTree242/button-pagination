@@ -44,7 +44,7 @@ public class StandardButtonPaginator implements Paginator {
     private final List<String> jwtTokens;
     private long messageId = -1;
     private int page = 0;
-    private Emoji[] emojis;
+    private final Emoji[] emojis;
 
     public StandardButtonPaginator(StandardPaginatorBuilder builder) {
         this.timeoutUnit = builder.getTimeoutUnit();
@@ -72,13 +72,19 @@ public class StandardButtonPaginator implements Paginator {
     }
 
     public ActionRow getActionRow() {
+        Button btn1 = Button.primary(jwtTokens.get(0), emojis[0]).asEnabled();
+        if (page == 1) {
+            btn1.asDisabled();
+        }
+        Button btn2 = Button.primary(jwtTokens.get(1), emojis[1]).asEnabled();
+        if (page == maxPage) {
+            btn2.asDisabled();
+        }
         return ActionRow.of(
                 //Forward
-                page == 1 ? Button.primary(jwtTokens.get(0), emojis[0]).asDisabled() :
-                        Button.primary(jwtTokens.get(0), emojis[0]).asEnabled(),
+                btn1,
                 //Backward
-                page == maxPage ? Button.primary(jwtTokens.get(1), emojis[1]).asDisabled() :
-                        Button.primary(jwtTokens.get(1), emojis[1]).asEnabled(),
+                btn2,
                 Button.danger(jwtTokens.get(2), emojis[2])
         );
     }

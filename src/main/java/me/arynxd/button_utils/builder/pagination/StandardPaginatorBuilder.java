@@ -20,12 +20,12 @@ public class StandardPaginatorBuilder extends PaginatorBuilder {
 
     /**
      * @param emojis 3 emojis of buttons in order: backward, forward, delete
-     * @return
+     * @return The current Builder of chaining
      * @throws IllegalStateException if {@param emojis} is not 3 values
      */
     public Builder<Paginator> setEmojis(Emoji... emojis) {
         if (emojis.length != 3) {
-            throw new IllegalStateException("Emojis must be 3 values");
+            throw new IllegalArgumentException("Emojis must be 3 values");
         }
         this.emojis = emojis;
         return this;
