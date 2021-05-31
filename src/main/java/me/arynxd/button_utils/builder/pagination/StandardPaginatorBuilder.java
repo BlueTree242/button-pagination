@@ -25,7 +25,7 @@ public class StandardPaginatorBuilder extends PaginatorBuilder {
      */
     public Builder<Paginator> setEmojis(Emoji... emojis) {
         if (emojis.length != 3) {
-            throw new IllegalArgumentException("Emojis must be 3 values");
+            throw new IllegalArgumentException("Array must have 3 values");
         }
         this.emojis = emojis;
         return this;
