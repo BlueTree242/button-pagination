@@ -71,7 +71,7 @@ public class StandardButtonPaginator implements Paginator {
         jwtTokens.add(token3);
     }
 
-    public ActionRow getActionRow() {
+    private ActionRow getActionRow() {
         Button btn1 = Button.primary(jwtTokens.get(0), emojis[0]).asEnabled();
         if (page == 1) {
             btn1.asDisabled();
