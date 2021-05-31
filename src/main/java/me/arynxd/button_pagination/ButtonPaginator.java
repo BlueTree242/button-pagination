@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -24,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 public class ButtonPaginator implements Paginator {
     public static final Logger LOGGER = LoggerFactory.getLogger(ButtonPaginator.class);
-
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final Random random = new Random();
 
@@ -39,14 +39,15 @@ public class ButtonPaginator implements Paginator {
     private final JDA jda;
 
     private final int maxPage;
-    private final ActionRow actionRow;
     private final List<String> jwtTokens;
     private long messageId = -1;
     private int page = 0;
+    private Emoji[] emojis;
 
     public ButtonPaginator(Builder builder) {
         this.timeoutUnit = builder.timeoutUnit;
         this.timeout = builder.timeout;
+        this.emojis = builder.emojis;
 
         this.predicate = builder.predicate;
         this.embeds = builder.embeds;
@@ -63,11 +64,7 @@ public class ButtonPaginator implements Paginator {
         String token2 = makeToken((short) random.nextInt());
         String token3 = makeToken((short) random.nextInt());
 
-        this.actionRow = ActionRow.of(
-                Button.primary(token1, ARROW_LEFT_EMOJI),
-                Button.primary(token2, ARROW_RIGHT_EMOJI),
-                Button.danger(token3, WASTEBASKET_EMOJI)
-        );
+
 
         jwtTokens.add(token1);
         jwtTokens.add(token2);
@@ -78,6 +75,14 @@ public class ButtonPaginator implements Paginator {
     public void paginate() {
         send();
         doWait();
+    }
+
+    public ActionRow getActionRow() {
+        return ActionRow.of(
+                page == maxPage ? Button.primary(jwtTokens.get(1), emojis[1]).asDisabled() : Button.primary(jwtTokens.get(1), emojis[1]).asEnabled(),
+                embeds.size() == 1 ? Button.primary(jwtTokens.get(1), emojis[1]).asDisabled() : Button.primary(jwtTokens.get(1), emojis[1]).asEnabled(),
+                Button.danger(jwtTokens.get(2), emojis[2])
+        );
     }
 
     private void doWait() {
@@ -102,7 +107,7 @@ public class ButtonPaginator implements Paginator {
     private void switchPage(ButtonClickEvent event) {
         event.deferEdit().queue();
         String jwt = event.getComponentId();
-        String emoji = event.getButton().getEmoji().getName();
+        String emoji = event.getButton().getId();
         Message message = event.getMessage();
 
         if (!jwtTokens.contains(jwt)) {
@@ -118,25 +123,23 @@ public class ButtonPaginator implements Paginator {
             return;
         }
 
-        switch (emoji) {
-            case ARROW_LEFT_UNICODE:
-                page--;
-                if (page < 0) {
-                    page = maxPage - 1;
-                }
-                break;
-            case ARROW_RIGHT_UNICODE:
-                page++;
-                if (page >= maxPage) {
-                    page = 0;
-                }
-                break;
-            case WASTEBASKET_UNICODE:
-                message.delete().queue();
-                return;
+        if (emoji.equals(jwtTokens.get(0))) {
+            page--;
+            if (page < 0) {
+                page = maxPage - 1;
+            }
+        } else if (emoji.equals(jwtTokens.get(1))) {
+            page++;
+            if (page >= maxPage) {
+                page = 0;
+            }
+        } else if (emoji.equals(jwtTokens.get(2))) {
+            message.delete().queue();
+            return;
         }
+
         message.editMessage(embeds.get(page))
-                .setActionRows(actionRow)
+                .setActionRows(getActionRow())
                 .queue();
         doWait();
     }
@@ -149,7 +152,7 @@ public class ButtonPaginator implements Paginator {
         }
 
         channel.sendMessage(embeds.get(page))
-                .setActionRows(actionRow)
+                .setActionRows(getActionRow())
                 .queue(m -> this.messageId = m.getIdLong());
     }
 
@@ -187,6 +190,7 @@ public class ButtonPaginator implements Paginator {
     }
 
     public static class Builder {
+        private Emoji[] emojis = {ARROW_LEFT_EMOJI, ARROW_RIGHT_EMOJI, WASTEBASKET_EMOJI};
         private int timeout = DEFAULT_TIMEOUT;
         private TimeUnit timeoutUnit = DEFAULT_TIMEOUT_UNIT;
         private boolean deleteOnTimeout = DEFAULT_DELETE_ON_TIMEOUT;
@@ -200,6 +204,16 @@ public class ButtonPaginator implements Paginator {
 
         public Builder setPredicate(Predicate<ButtonClickEvent> predicate) {
             this.predicate = predicate;
+            return this;
+        }
+
+
+        /**
+         * @param emojis The emojis of the buttons in order: backward, forward, delete
+         * @return The Current Builder
+         */
+        public Builder setEmojis(Emoji... emojis) {
+            this.emojis = emojis;
             return this;
         }
 

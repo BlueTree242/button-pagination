@@ -34,8 +34,8 @@ public class Main {
             .setEmbeds(embeds)
             .setJDA(jda)
             .setChannel(0)
-            .setPredicate(event -> { event.getMember().getIdLong() == 0 })
-            .build()
+            .setPredicate(event -> { return event.getMember().getIdLong() == 0; })
+            .build();
 
         paginator.paginate();
     }
