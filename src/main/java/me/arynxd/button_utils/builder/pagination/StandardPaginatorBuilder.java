@@ -20,7 +20,7 @@ public class StandardPaginatorBuilder extends PaginatorBuilder {
 
     /**
      * @param emojis 3 emojis of buttons in order: backward, forward, delete
-     * @return The current Builder of chaining
+     * @return The current Builder for chaining
      * @throws IllegalStateException if {@param emojis} is not 3 values
      */
     public Builder<Paginator> setEmojis(Emoji... emojis) {

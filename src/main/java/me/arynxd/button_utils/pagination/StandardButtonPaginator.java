@@ -72,19 +72,19 @@ public class StandardButtonPaginator implements Paginator {
     }
 
     private ActionRow getActionRow() {
-        Button btn1 = Button.primary(jwtTokens.get(0), emojis[0]).asEnabled();
+        Button forward = Button.primary(jwtTokens.get(0), emojis[0]).asEnabled();
         if (page == 1) {
-            btn1.asDisabled();
+            forward.asDisabled();
         }
-        Button btn2 = Button.primary(jwtTokens.get(1), emojis[1]).asEnabled();
+        Button backward = Button.primary(jwtTokens.get(1), emojis[1]).asEnabled();
         if (page == maxPage) {
-            btn2.asDisabled();
+            backward.asDisabled();
         }
         return ActionRow.of(
                 //Forward
-                btn1,
+                forward,
                 //Backward
-                btn2,
+                backward,
                 Button.danger(jwtTokens.get(2), emojis[2])
         );
     }
