@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 import me.arynxd.button_utils.Constants;
 import me.arynxd.button_utils.builder.pagination.StandardPaginatorBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -39,15 +40,14 @@ public class StandardButtonPaginator implements Paginator {
     private final JDA jda;
 
     private final int maxPage;
-    private final ActionRow actionRow;
     private final List<String> jwtTokens;
     private long messageId = -1;
     private int page = 0;
-
+    private Emoji[] emojis;
     public StandardButtonPaginator(StandardPaginatorBuilder builder) {
         this.timeoutUnit = builder.getTimeoutUnit();
         this.timeout = builder.getTimeout();
-
+        this.emojis = builder.getEmojis();
         this.predicate = builder.getPredicate();
         this.embeds = builder.getEmbeds();
         this.deleteOnTimeout = builder.isDeleteOnTimeout();
@@ -63,17 +63,24 @@ public class StandardButtonPaginator implements Paginator {
         String token2 = makeToken((short) random.nextInt());
         String token3 = makeToken((short) random.nextInt());
 
-        this.actionRow = ActionRow.of(
-                Button.primary(token1, Constants.ARROW_LEFT_EMOJI),
-                Button.primary(token2, Constants.ARROW_RIGHT_EMOJI),
-                Button.danger(token3, Constants.WASTEBASKET_EMOJI)
-        );
+
 
         jwtTokens.add(token1);
         jwtTokens.add(token2);
         jwtTokens.add(token3);
     }
 
+    public ActionRow getActionRow() {
+        return         ActionRow.of(
+                //Forward
+                page == 1 ? Button.primary(jwtTokens.get(0), emojis[0]).asDisabled() :
+                        Button.primary(jwtTokens.get(0), emojis[0]).asEnabled(),
+                //Backward
+                page == maxPage ? Button.primary(jwtTokens.get(1), emojis[1]).asDisabled() :
+                        Button.primary(jwtTokens.get(1), emojis[1]).asEnabled(),
+                Button.danger(jwtTokens.get(2), emojis[2])
+        );
+    }
     @Override
     public void paginate() {
         send();
@@ -136,7 +143,7 @@ public class StandardButtonPaginator implements Paginator {
                 return;
         }
         message.editMessage(embeds.get(page))
-                .setActionRows(actionRow)
+                .setActionRows(getActionRow())
                 .queue();
         doWait();
     }
@@ -149,7 +156,7 @@ public class StandardButtonPaginator implements Paginator {
         }
 
         channel.sendMessage(embeds.get(page))
-                .setActionRows(actionRow)
+                .setActionRows(getActionRow())
                 .queue(m -> this.messageId = m.getIdLong());
     }
 

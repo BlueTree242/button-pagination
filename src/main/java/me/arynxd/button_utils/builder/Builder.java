@@ -7,14 +7,18 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
+
+import me.arynxd.button_utils.Constants;
 import me.arynxd.button_utils.pagination.Paginator;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.internal.utils.Checks;
 
 public abstract class Builder<T> {
+
     private int timeout = Paginator.DEFAULT_TIMEOUT;
     private TimeUnit timeoutUnit = Paginator.DEFAULT_TIMEOUT_UNIT;
     private boolean deleteOnTimeout = Paginator.DEFAULT_DELETE_ON_TIMEOUT;
@@ -125,8 +129,11 @@ public abstract class Builder<T> {
     @Nonnull
     protected abstract T compile();
 
+
+
     public T build() {
         validate();
         return compile();
     }
+
 }
