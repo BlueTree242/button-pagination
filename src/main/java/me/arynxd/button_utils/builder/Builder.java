@@ -1,24 +1,23 @@
 package me.arynxd.button_utils.builder;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
-import javax.annotation.Nonnull;
-
-import me.arynxd.button_utils.Constants;
 import me.arynxd.button_utils.pagination.Paginator;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+
 public abstract class Builder<T> {
 
+    private final List<Runnable> checks = new ArrayList<>();
     private int timeout = Paginator.DEFAULT_TIMEOUT;
     private TimeUnit timeoutUnit = Paginator.DEFAULT_TIMEOUT_UNIT;
     private boolean deleteOnTimeout = Paginator.DEFAULT_DELETE_ON_TIMEOUT;
@@ -28,8 +27,6 @@ public abstract class Builder<T> {
     private List<MessageEmbed> embeds = new ArrayList<>();
     private JDA jda = null;
 
-    private final List<Runnable> checks = new ArrayList<>();
-
     protected Builder() {
         this.checks.addAll(Arrays.asList(
                 () -> Checks.notEmpty(embeds, "Embeds"),
@@ -37,7 +34,7 @@ public abstract class Builder<T> {
                 () -> Checks.notNull(predicate, "Predicate"),
                 () -> Checks.notNull(jda, "JDA"),
                 () -> Checks.notNegative(channelId, "Channel ID")
-            )
+                )
         );
     }
 
@@ -128,7 +125,6 @@ public abstract class Builder<T> {
 
     @Nonnull
     protected abstract T compile();
-
 
 
     public T build() {

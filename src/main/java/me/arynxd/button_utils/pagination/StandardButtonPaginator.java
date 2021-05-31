@@ -4,12 +4,6 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import java.security.Key;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 import me.arynxd.button_utils.Constants;
 import me.arynxd.button_utils.builder.pagination.StandardPaginatorBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -22,6 +16,13 @@ import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.interactions.button.Button;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.security.Key;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 public class StandardButtonPaginator implements Paginator {
     public static final Logger LOGGER = LoggerFactory.getLogger(StandardButtonPaginator.class);
@@ -44,6 +45,7 @@ public class StandardButtonPaginator implements Paginator {
     private long messageId = -1;
     private int page = 0;
     private Emoji[] emojis;
+
     public StandardButtonPaginator(StandardPaginatorBuilder builder) {
         this.timeoutUnit = builder.getTimeoutUnit();
         this.timeout = builder.getTimeout();
@@ -64,14 +66,13 @@ public class StandardButtonPaginator implements Paginator {
         String token3 = makeToken((short) random.nextInt());
 
 
-
         jwtTokens.add(token1);
         jwtTokens.add(token2);
         jwtTokens.add(token3);
     }
 
     public ActionRow getActionRow() {
-        return         ActionRow.of(
+        return ActionRow.of(
                 //Forward
                 page == 1 ? Button.primary(jwtTokens.get(0), emojis[0]).asDisabled() :
                         Button.primary(jwtTokens.get(0), emojis[0]).asEnabled(),
@@ -81,6 +82,7 @@ public class StandardButtonPaginator implements Paginator {
                 Button.danger(jwtTokens.get(2), emojis[2])
         );
     }
+
     @Override
     public void paginate() {
         send();
